@@ -1,7 +1,7 @@
-#include <stddef.h>
 #define SH25_STACK_IMPLEMENTATION
-#include "../sh25_stack.h"
+#include "sh25_stack.h"
 
+#include <stddef.h>
 #include <assert.h>
 #include <stdio.h>
 

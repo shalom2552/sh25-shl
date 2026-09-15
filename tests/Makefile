@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c17 -I../ -g -O0 -fsanitize=address,undefined -fno-omit-frame-pointer
+CFLAGS = -Wall -Wextra -pedantic -std=c17 -I../include -g -O0 -fsanitize=address,undefined -fno-omit-frame-pointer
 
 SRC = $(wildcard *.c)
 BIN = test_runner
