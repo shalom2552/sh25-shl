@@ -8,13 +8,12 @@ static int total = 0;
 
 static void test(int (*test_suite)(void), const char* name)
 {
-    printf("Running %s...", name);
-    fflush(stdout);
+    printf("Running %s...\n", name);
 
     int count = test_suite();
     total += count;
 
-    printf("\r\033[2K %s: \t%d tests [OK]\n", name, count);
+    printf("%s: \t%d tests passed\n\n", name, count);
 }
 
 int main(void)

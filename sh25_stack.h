@@ -1,15 +1,47 @@
 /*
- * Shalome2552 stack single header file library.
+ * Stack single-header library.
  *
- * stack_init - must call init before use
- * stack_clear
- * stack_destroy
- * stack_push -
- * stack_pop - 
- * stack_peek
- * stack_size
- * stack_empty
+ * This library provides a simple stack implementation with dynamic memory allocation.
+ * The stack is implemented using a dynamic array and supports dynamic resizing.
  *
+ * API:
+ *
+ * stack_init       - stack must be initialized before use.
+ * stack_push       - pushes an item to the stack, returns error code on faild allocation.
+ * stack_pop        - calling pop on an empty stack is undefined, check stack empty first.
+ * stack_drop       - use stack_drop(stack) if you want to pop without storing the value.
+ * stack_peek       - calling peek on an empty stack is undefined, check stack empty first.
+ * stack_size       - returns the number of items in the stack.
+ * stack_empty      - returns 1 if the stack is empty, 0 otherwise.
+ * stack_clear      - clears the stack and keeps the alocated capacity.
+ * stack_destroy    - destroys the stack and frees all allocated memory.
+ *
+ * Usage:
+ *
+ * Include the header file in any file where you want to use the stack: #include "sh25_stack.h"
+ * Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
+ *  - Create a stack: stack_t stack = {0};
+ *  - Must call `stack_init` before any use.
+ *  - Check stack_empty before pop or peek.
+ *  - Call stack_destroy when done to free memor.
+ *
+ * Example usage:
+ *
+ *  #define SH25_STACK_IMPLEMENTATION
+ *  #include "sh25_stack.h"
+ *  stack_t stack = {0};
+ *  stack_init(stack, sizeof(int));
+ *  int a = 10;
+ *  stack_push(stack, a);
+ *  int value;
+ *  stack_peek(stack, value);
+ *  printf("Top value: %d\n", value);
+ *  stack_drop(stack);
+ *  stack_destroy(stack);
+ *
+ * strong gurantee: if a function fails the stack is unchanged and still valid.
+ *
+ * Author: Shalome2552
  */
 #ifndef SH25_STACK_fe38ae3e35107192f10c318e1f600880
 #define SH25_STACK_fe38ae3e35107192f10c318e1f600880
@@ -21,6 +53,13 @@
 
 #define STACK_INITIAL_CAPACITY 16
 
+typedef enum {
+    STACK_OK,
+    STACK_UNINITIALIZED,
+    STACK_MEMORY_ERROR,
+    STACK_EMPTY,
+} StackResult;
+
 typedef struct {
     void* top;
     void* data;
@@ -30,28 +69,23 @@ typedef struct {
 } stack_t;
 
 void sh25_stack_init(stack_t* stack, size_t item_size);
+StackResult sh25_stack_push(stack_t* stack, void* item);
+StackResult sh25_stack_pop(stack_t* stack, void* pop);
+StackResult sh25_stack_peek(stack_t* stack, void* peek);
+int sh25_stack_size(stack_t* stack);
+int sh25_stack_empty(stack_t* stack);
 void sh25_stack_clear(stack_t* stack);
 void sh25_stack_destroy(stack_t* stack);
-void sh25_stack_push(stack_t* stack, void* item);
-void sh25_stack_pop(stack_t* stack, void* pop);
-void sh25_stack_peek(stack_t* stack, void* peek);
-size_t sh25_stack_size(stack_t* stack);
-int sh25_stack_empty(stack_t* stack);
 
 #define stack_init(stack, item_size)    sh25_stack_init(&stack, item_size)
-#define stack_clear(stack)              sh25_stack_clear(&stack)
-#define stack_destroy(stack)            sh25_stack_destroy(&stack)
-#define stack_push(stack, item)         sh25_stack_push(&stack, (void*)&item)
+#define stack_push(stack, item)         sh25_stack_push(&stack, (void*)&(__typeof__(item)){ (item) })
 #define stack_pop(stack, pop)           sh25_stack_pop(&stack, (void*)&pop)
+#define stack_drop(stack)               sh25_stack_pop(&stack, NULL)
 #define stack_peek(stack, peek)         sh25_stack_peek(&stack, (void*)&peek)
 #define stack_size(stack)               sh25_stack_size(&stack)
 #define stack_empty(stack)              sh25_stack_empty(&stack)
-
-
-// // TODO: Remove this line
-// #define SH25_STACK_IMPLEMENTATION
-// // TODO: Remove this line
-
+#define stack_clear(stack)              sh25_stack_clear(&stack)
+#define stack_destroy(stack)            sh25_stack_destroy(&stack)
 
 #ifdef SH25_STACK_IMPLEMENTATION
 
@@ -60,64 +94,53 @@ void sh25_stack_init(stack_t *stack, size_t item_size)
     assert(stack);
 
     stack->top = NULL;
-    stack->data = malloc(item_size * STACK_INITIAL_CAPACITY);
-    stack->capacity = STACK_INITIAL_CAPACITY;
-    stack->item_size = item_size;
-    stack->size = 0;
-
-    // TODO: Checck this
-    // if malloc fails, what to do?
-    // should we make stack NULL?
-    if (!stack->data) {
-        return;
-    }
-}
-
-// void sh25_stack_clear(stack_t* stack);
-
-void sh25_stack_destroy(stack_t* stack)
-{
-    assert(stack);
-    assert(stack->data);
-
-    free(stack->data);
-
     stack->data = NULL;
-    stack->top = NULL;
+    stack->item_size = item_size;
     stack->capacity = 0;
     stack->size = 0;
-    stack->item_size = 0;
-    stack = NULL;
 }
 
-void sh25_stack_push(stack_t* stack, void* item)
+StackResult sh25_stack_push(stack_t* stack, void* item)
 {
     assert(stack);
     assert(item);
-    assert(stack->data);
 
-    if (stack->size == stack->capacity) {
-        stack->capacity *= 2;
-        stack->data = realloc(stack->data, stack->capacity);
-        assert(stack->data);
+    if (stack->size >= stack->capacity) {
+        if (stack->capacity == 0) {
+            stack->capacity = STACK_INITIAL_CAPACITY;
+        } else {
+            stack->capacity *= 2;
+        }
+
+        size_t capacity = stack->capacity * 2;
+        void* data = realloc(stack->data, capacity);
+        if (!data) {
+            return STACK_MEMORY_ERROR;
+        }
+
+        stack->data = data;
+        stack->capacity = capacity;
     }
 
     memcpy((char*)stack->data + stack->item_size * (stack->size), item, stack->item_size);
     stack->top = (void*)((char*)stack->data + stack->item_size * stack->size);
+
     ++stack->size;
+    return STACK_OK;
 }
 
-void sh25_stack_pop(stack_t* stack, void* pop)
+StackResult sh25_stack_pop(stack_t* stack, void* pop)
 {
     assert(stack);
-    assert(pop);
+    assert(stack->data);
 
     if (stack->size == 0) {
-        // TODO: handle empty pop
-        return;
+        return STACK_EMPTY;
     }
 
-    memcpy(pop, stack->top, stack->item_size);
+    if (pop) {
+        memcpy(pop, stack->top, stack->item_size);
+    }
     --stack->size;
 
     if (stack->size < stack->capacity / 4) {
@@ -127,11 +150,55 @@ void sh25_stack_pop(stack_t* stack, void* pop)
     }
 
     stack->top = (void*)((char*)stack->data + stack->item_size * (stack->size - 1));
+    return STACK_OK;
 }
 
-// void sh25_stack_peek(stack_t* stack, void* peek);
-// void sh25_stack_size(stack_t* stack);
-// void sh25_stack_empty(stack_t* stack);
+StackResult sh25_stack_peek(stack_t* stack, void* peek)
+{
+    assert(stack);
+    assert(peek);
+    assert(stack->data);
+
+    if (stack->size == 0) {
+        return STACK_EMPTY;
+    }
+
+    memcpy(peek, stack->top, stack->item_size);
+    return STACK_OK;
+}
+
+int sh25_stack_size(stack_t* stack)
+{
+    assert(stack);
+
+    return stack->size;
+}
+
+int sh25_stack_empty(stack_t* stack)
+{
+    assert(stack);
+    return stack->size == 0;
+}
+
+void sh25_stack_clear(stack_t* stack)
+{
+    assert(stack);
+    stack->top = (void*)((char*)stack->data + stack->item_size * stack->size);
+    stack->size = 0;
+}
+
+void sh25_stack_destroy(stack_t* stack)
+{
+    assert(stack);
+
+    free(stack->data);
+
+    stack->data = NULL;
+    stack->top = NULL;
+    stack->capacity = 0;
+    stack->size = 0;
+    stack = NULL;
+}
 
 #endif // SH25_STACK_IMPLEMENTATION
 
