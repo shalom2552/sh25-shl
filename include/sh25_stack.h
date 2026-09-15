@@ -53,13 +53,6 @@
 
 #define STACK_INITIAL_CAPACITY 16
 
-typedef enum {
-    STACK_OK,
-    STACK_UNINITIALIZED,
-    STACK_MEMORY_ERROR,
-    STACK_EMPTY,
-} StackResult;
-
 typedef struct {
     void* top;
     void* data;
@@ -67,6 +60,12 @@ typedef struct {
     size_t item_size;
     size_t size;
 } stack_t;
+
+typedef enum {
+    STACK_OK,
+    STACK_MEMORY_ERROR,
+    STACK_EMPTY,
+} StackResult;
 
 void sh25_stack_init(stack_t* stack, size_t item_size);
 StackResult sh25_stack_push(stack_t* stack, void* item);
@@ -131,12 +130,11 @@ StackResult sh25_stack_push(stack_t* stack, void* item)
 
 StackResult sh25_stack_pop(stack_t* stack, void* pop)
 {
-    assert(stack);
-    assert(stack->data);
-
     if (stack->size == 0) {
         return STACK_EMPTY;
     }
+    assert(stack);
+    assert(stack->data && "Is stack initialized?");
 
     if (pop) {
         memcpy(pop, stack->top, stack->item_size);
@@ -155,13 +153,13 @@ StackResult sh25_stack_pop(stack_t* stack, void* pop)
 
 StackResult sh25_stack_peek(stack_t* stack, void* peek)
 {
-    assert(stack);
-    assert(peek);
-    assert(stack->data);
-
     if (stack->size == 0) {
         return STACK_EMPTY;
     }
+
+    assert(stack);
+    assert(peek);
+    assert(stack->data && "Is stack initialized?");
 
     memcpy(peek, stack->top, stack->item_size);
     return STACK_OK;
