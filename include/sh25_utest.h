@@ -1,20 +1,20 @@
 /*
  * sh25_utest.h - single-header unit test library for c.
  *
- * This library provides a simple framework for writing unit tests in C/++.
+ * This library provides a simple framework for writing unit tests in C/C++.
  * It provides macros to define test functions, test suites, assertions, and to run tests.
  * It also provides macros to define the main function to run all test suites.
  *
- * Define SH25_UTEST_IMPLEMENTATION in exactly ONE translation unit before
- * including this header.
+ * Define SH25_UTEST_IMPLEMENTATION in exactly ONE translation unit before including this header.
  *
  * API:
- *   TEST(name)         Define a test function. Body implement with braces.
- *   TEST_SUITE(name)   Define a test suite. Body implement with braces.
- *   ASSERT(condition)  Fail the current test if condition is false and return.
- *   RUN(name)          Run a test function, counting the number of tests passed and failed.
- *   RUN_SUITE(name)    Run a test suite, printing its results.
- *   TEST_MAIN          Generate main(). Body lists RUN_SUITE calls.
+ *   TEST(name)             Define a test function. Body implement with braces.
+ *   TEST_SUITE(name)       Define a test suite. Body implement with braces.
+ *   ASSERT(condition)      Fail the current test if condition is false and return.
+ *   ASSERT_EQ(a, b)        Fail the current test if `a != b` and report both values.
+ *   RUN(name)              Run a test function, counting the number of tests passed and failed.
+ *   RUN_SUITE(name)        Run a test suite, printing its results.
+ *   TEST_MAIN              Generate main(). Body lists RUN_SUITE calls.
  *
  * Verbosity:
  *   (none)     full output
@@ -29,8 +29,8 @@
  *   3. Define your test suites using TEST_SUITE() macro.
  *   4. Call RUN() macro to run a test function.
  *   5. Define TEST_MAIN macro to run all test suites.
- *   7. Call RUN_SUITE() macro to run a test suite.
- *   8. Define SH25_UTEST_IMPLEMENTATION macro to implement the test functions.
+ *   6. Call RUN_SUITE() macro to run a test suite.
+ *   7. Define SH25_UTEST_IMPLEMENTATION macro to implement the test functions.
  *
  * Example Usage:
  *   #define SH25_UTEST_IMPLEMENTATION
@@ -113,7 +113,7 @@ extern int sh25_utest_total;
         SH25_LOG(1, "=================================================\n"); \
         sh25_utest_run(); \
         SH25_LOG(2, "=================================================\n"); \
-        SH25_LOG(1, "Total %d/%d tests passed!", sh25_utest_passed, sh25_utest_total); \
+        SH25_LOG(1, "Total %d/%d tests passed!\n", sh25_utest_passed, sh25_utest_total); \
         return sh25_utest_passed == sh25_utest_total ? 0 : 1; \
     } \
     static void sh25_utest_run(void)

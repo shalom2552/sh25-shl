@@ -4,40 +4,39 @@
  * This library provides a simple stack implementation with dynamic memory allocation.
  * The stack is implemented using a dynamic array and supports dynamic resizing.
  *
- * API:
+ * Define SH25_STACK_IMPLEMENTATION in exactly ONE translation unit before including this header.
  *
- * stack_init       - stack must be initialized before use.
- * stack_push       - pushes an item to the stack, returns error code on faild allocation.
- * stack_pop        - calling pop on an empty stack is undefined, check stack empty first.
- * stack_drop       - use stack_drop(stack) if you want to pop without storing the value.
- * stack_peek       - calling peek on an empty stack is undefined, check stack empty first.
- * stack_size       - returns the number of items in the stack.
- * stack_empty      - returns 1 if the stack is empty, 0 otherwise.
- * stack_clear      - clears the stack and keeps the alocated capacity.
- * stack_destroy    - destroys the stack and frees all allocated memory.
+ * API:
+ *   stack_init(stack, item_size)   initialize the stack with a given item size, must call before use.
+ *   stack_push(stack, item)        Pushes an item to the stack, returns error code on failed allocation.
+ *   stack_pop(stack, pop)          Calling pop on an empty stack is undefined, check stack empty first.
+ *   stack_drop(stack)              Use stack_drop(stack) if you want to pop without storing the value.
+ *   stack_peek(stack, peek)        Calling peek on an empty stack is undefined, check stack empty first.
+ *   stack_size(stack)              Returns the number of items in the stack.
+ *   stack_empty(stack)             Returns 1 if the stack is empty, 0 otherwise.
+ *   stack_clear(stack)             Clears the stack and keeps the allocated capacity.
+ *   stack_destroy(stack)           Destroys the stack and frees all allocated memory.
  *
  * Usage:
- *
- * Include the header file in any file where you want to use the stack: #include "sh25_stack.h"
- * Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
- *  - Create a stack: stack_t stack = {0};
- *  - Must call `stack_init` before any use.
- *  - Check stack_empty before pop or peek.
- *  - Call stack_destroy when done to free memor.
+ *   Include the header file in any file where you want to use the stack: #include "sh25_stack.h"
+ *   Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
+ *    - Create a stack: stack_t stack = {0};
+ *    - Must call `stack_init` before any use.
+ *    - Check stack_empty before pop or peek.
+ *    - Call stack_destroy when done to free memory.
  *
  * Example usage:
- *
- *  #define SH25_STACK_IMPLEMENTATION
- *  #include "sh25_stack.h"
- *  stack_t stack = {0};
- *  stack_init(stack, sizeof(int));
- *  int a = 10;
- *  stack_push(stack, a);
- *  int value;
- *  stack_peek(stack, value);
- *  printf("Top value: %d\n", value);
- *  stack_drop(stack);
- *  stack_destroy(stack);
+ *   #define SH25_STACK_IMPLEMENTATION
+ *   #include "sh25_stack.h"
+ *   stack_t stack = {0};
+ *   stack_init(stack, sizeof(int));
+ *   int a = 10;
+ *   stack_push(stack, a);
+ *   int value;
+ *   stack_peek(stack, value);
+ *   printf("Top value: %d\n", value);
+ *   stack_drop(stack);
+ *   stack_destroy(stack);
  *
  * strong gurantee: if a function fails the stack is unchanged and still valid.
  *
