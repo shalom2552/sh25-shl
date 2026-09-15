@@ -13,7 +13,7 @@ int matching(char open, char close) {
     return ((open == '(' && close == ')') || (open == '[' && close == ']') || (open == '{' && close == '}'));
 }
 
-int valid_parentheses(char* str) {
+int valid_parentheses(const char* str) {
     stack_t s = {0};
     stack_init(s, sizeof(char));
 
@@ -51,6 +51,7 @@ static Case cases[] = {
     { .valid = 1, .str = "()()[()]{{()[()]}}" },
 };
 
+#ifndef NO_MAIN
 int main(void) {
     int n = sizeof(cases) / sizeof(Case);
     for (int i = 0; i < n; ++i) {
@@ -62,3 +63,4 @@ int main(void) {
     }
     return 0;
 }
+#endif // ifndef NO_MAIN
