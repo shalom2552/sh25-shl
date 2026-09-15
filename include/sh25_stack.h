@@ -1,5 +1,5 @@
 /*
- * Stack single-header library.
+ * sh25_stack.h - single-header stack library for c.
  *
  * This library provides a simple stack implementation with dynamic memory allocation.
  * The stack is implemented using a dynamic array and supports dynamic resizing.
@@ -42,6 +42,7 @@
  * strong gurantee: if a function fails the stack is unchanged and still valid.
  *
  * Author: Shalome2552
+ * License: MIT
  */
 #ifndef SH25_STACK_fe38ae3e35107192f10c318e1f600880
 #define SH25_STACK_fe38ae3e35107192f10c318e1f600880

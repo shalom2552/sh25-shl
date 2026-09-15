@@ -3,6 +3,11 @@
 
 A collection of single header libraries for c.
 
+## Libraries
+
+- **sh25_stack**: A stack implementation using dynamic memory allocation.
+- **sh25_utest**: A simple unit testing framework for c.
+
 ## Usage
 
 ```c
