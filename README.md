@@ -114,7 +114,7 @@ TEST_MAIN {
 
 ## Examples
 
-`examples/stack_example.c` checks balanced brackets using the stack.
+See [examples](examples).
 
 ## Tests
 

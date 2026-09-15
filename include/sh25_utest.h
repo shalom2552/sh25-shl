@@ -18,7 +18,7 @@
  *
  * Verbosity:
  *   (none)     full output
- *   -q (1)     suites and failures only
+ *   -q (1)     failures and summary only
  *   -s (0)     silent, exit code only
  *
  * Exit Code: 0 if all tests passed, 1 otherwise.
@@ -73,7 +73,7 @@ void sh25_utest__report(void);
 #define SH25__DOTS "..................................................."
 #define SH25__LINE "============================================================"
 
-/* level; 0 = silent, 1 = suites + failures, 2 = every test (default) */
+/* level; 0 = silent, 1 = failures + summary, 2 = every test (default) */
 #define SH25__LOG(level, ...) do { if (sh25_utest_verbose >= level) { printf(__VA_ARGS__); fflush(stdout); } } while (0)
 
 #define TEST(name) static void name(void)
