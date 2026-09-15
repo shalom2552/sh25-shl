@@ -9,7 +9,7 @@ TEST(test_valid_parentheses_valid_empty) {
 }
 
 TEST(test_valid_parentheses_valid_single) {
-    ASSERT(valid_parentheses("()") == 1);
+    ASSERT(valid_parentheses("()") == 0); // fails
 }
 
 TEST(test_valid_parentheses_valid_multiple) {
@@ -33,19 +33,19 @@ TEST_SUITE(test_valid_parentheses_valid) {
 }
 
 TEST(test_valid_parentheses_invalid_single) {
-    ASSERT(valid_parentheses("(") == 0);
+    ASSERT_EQ(valid_parentheses("("), 0);
 }
 
 TEST(test_valid_parentheses_invalid_multiple) {
-    ASSERT(valid_parentheses("((") == 0);
+    ASSERT_EQ(valid_parentheses("(("), 0);
 }
 
 TEST(test_valid_parentheses_invalid_long) {
-    ASSERT(valid_parentheses("([)]") == 0);
+    ASSERT_EQ(valid_parentheses("([)]"), 1); // fails
 }
 
 TEST(test_valid_parentheses_invalid_longest) {
-    ASSERT(valid_parentheses("{([[])}]") == 0);
+    ASSERT_EQ(valid_parentheses("{([[])}]"), 0);
 }
 
 TEST_SUITE(test_valid_parentheses_invalid) {
