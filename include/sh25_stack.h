@@ -8,10 +8,10 @@
  *
  * API:
  *   stack_init(stack, item_size)   initialize the stack with a given item size, must call before use.
- *   stack_push(stack, item)        Pushes an item to the stack, returns error code on failed allocation.
- *   stack_pop(stack, pop)          Calling pop on an empty stack is undefined, check stack empty first.
- *   stack_drop(stack)              Use stack_drop(stack) if you want to pop without storing the value.
- *   stack_peek(stack, peek)        Calling peek on an empty stack is undefined, check stack empty first.
+ *   stack_push(stack, item)        Pushes an item to the stack, returns STACK_MEMORY_ERROR on failed allocation.
+ *   stack_pop(stack, pop)          Pops into pop, returns STACK_EMPTY if empty.
+ *   stack_drop(stack)              Pops without storing the value.
+ *   stack_peek(stack, peek)        Copies top into peek, returns STACK_EMPTY if empty.
  *   stack_size(stack)              Returns the number of items in the stack.
  *   stack_empty(stack)             Returns 1 if the stack is empty, 0 otherwise.
  *   stack_clear(stack)             Clears the stack and keeps the allocated capacity.
@@ -22,12 +22,13 @@
  *   Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
  *    - Create a stack: stack_t stack = {0};
  *    - Must call `stack_init` before any use.
- *    - Check stack_empty before pop or peek.
+ *    - Pop, drop and peek return STACK_EMPTY on an empty stack.
  *    - Call stack_destroy when done to free memory.
  *
  * Example usage:
  *   #define SH25_STACK_IMPLEMENTATION
  *   #include "sh25_stack.h"
+ *   #include <stdio.h>
  *   stack_t stack = {0};
  *   stack_init(stack, sizeof(int));
  *   int a = 10;
@@ -40,7 +41,7 @@
  *
  * strong gurantee: if a function fails the stack is unchanged and still valid.
  *
- * Author: Shalome2552
+ * Author: shalom2552
  * License: MIT
  */
 #ifndef SH25_STACK_fe38ae3e35107192f10c318e1f600880
@@ -105,13 +106,7 @@ StackResult sh25_stack_push(stack_t* stack, void* item)
     assert(item);
 
     if (stack->size >= stack->capacity) {
-        if (stack->capacity == 0) {
-            stack->capacity = STACK_INITIAL_CAPACITY;
-        } else {
-            stack->capacity *= 2;
-        }
-
-        size_t capacity = stack->capacity * 2;
+        size_t capacity = stack->capacity == 0 ? STACK_INITIAL_CAPACITY : stack->capacity * 2;
         void* data = realloc(stack->data, capacity * stack->item_size);
         if (!data) {
             return STACK_MEMORY_ERROR;
@@ -142,9 +137,12 @@ StackResult sh25_stack_pop(stack_t* stack, void* pop)
     --stack->size;
 
     if (stack->size < stack->capacity / 4) {
-        stack->capacity = stack->capacity / 2;
-        stack->data = (void*)realloc(stack->data, stack->capacity * stack->item_size);
-        assert(stack->data);
+        size_t capacity = stack->capacity / 2;
+        void* data = realloc(stack->data, capacity * stack->item_size);
+        if (data) {
+            stack->data = data;
+            stack->capacity = capacity;
+        }
     }
 
     stack->top = (void*)((char*)stack->data + stack->item_size * (stack->size - 1));

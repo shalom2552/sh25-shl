@@ -12,32 +12,29 @@
  *   TEST_SUITE(name)       Define a test suite. Body implement with braces.
  *   ASSERT(condition)      Fail the current test if condition is false and return.
  *   ASSERT_EQ(a, b)        Fail the current test if `a != b` and report both values.
- *   RUN(name)              Run a test function, counting the number of tests passed and failed.
+ *   RUN_TEST(name)         Run a test function, counting the number of tests passed and failed.
  *   RUN_SUITE(name)        Run a test suite, printing its results.
  *   TEST_MAIN              Generate main(). Body lists RUN_SUITE calls.
  *
  * Verbosity:
  *   (none)     full output
- *   -q (0)     suites and failures only
- *   -s (1)     silent, exit code only
+ *   -q (1)     suites and failures only
+ *   -s (0)     silent, exit code only
  *
  * Exit Code: 0 if all tests passed, 1 otherwise.
  *
  * Usage:
- *   1. Include this header in your test file.
- *   2. Define your test functions using TEST() macro.
- *   3. Define your test suites using TEST_SUITE() macro.
- *   4. Call RUN() macro to run a test function.
- *   5. Define TEST_MAIN macro to run all test suites.
- *   6. Call RUN_SUITE() macro to run a test suite.
- *   7. Define SH25_UTEST_IMPLEMENTATION macro to implement the test functions.
+ *   1. Define SH25_UTEST_IMPLEMENTATION once, before including this header.
+ *   2. Define tests with TEST().
+ *   3. Define suites with TEST_SUITE(), call RUN_TEST() for each test.
+ *   4. Use TEST_MAIN once, call RUN_SUITE() for each suite.
  *
  * Example Usage:
  *   #define SH25_UTEST_IMPLEMENTATION
  *   #include "sh25_utest.h"
  *   #include "stack.h"
  *   TEST(test_stack_size) { ASSERT(1); }
- *   TEST_SUITE(test_stack) { RUN(test_stack_size); }
+ *   TEST_SUITE(test_stack) { RUN_TEST(test_stack_size); }
  *   TEST_MAIN { RUN_SUITE(test_stack); }
  *
  * Author: shalom2552
