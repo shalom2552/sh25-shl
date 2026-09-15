@@ -114,7 +114,7 @@ StackResult sh25_stack_push(stack_t* stack, void* item)
         }
 
         size_t capacity = stack->capacity * 2;
-        void* data = realloc(stack->data, capacity);
+        void* data = realloc(stack->data, capacity * stack->item_size);
         if (!data) {
             return STACK_MEMORY_ERROR;
         }
@@ -146,7 +146,7 @@ StackResult sh25_stack_pop(stack_t* stack, void* pop)
 
     if (stack->size < stack->capacity / 4) {
         stack->capacity = stack->capacity / 2;
-        stack->data = (void*)realloc(stack->data, stack->capacity);
+        stack->data = (void*)realloc(stack->data, stack->capacity * stack->item_size);
         assert(stack->data);
     }
 
