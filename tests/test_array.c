@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #define SH25_ARRAY_IMPLEMENTATION
 #include "sh25_array.h"
 
@@ -15,6 +16,8 @@ TEST(test_array_init)
     int value = 0;
     ASSERT_EQ(array_get(array, 0, value), ARRAY_OUT_OF_BOUND);
     ASSERT_EQ(array_set(array, 0, value), ARRAY_OUT_OF_BOUND);
+    ASSERT_EQ(array_empty(array), 1);
+    ASSERT_EQ(array_size(array), 0);
 
     array_destroy(array);
 }
@@ -106,39 +109,69 @@ TEST(test_array_size)
 {
     Array array;
     array_init(array, sizeof(int));
-    int max_size = ARRAY_INITIAL_CAPACITY * 2 + 2;
+    size_t max_size = ARRAY_INITIAL_CAPACITY * 2 + 2;
 
     int value;
-    for (int i = 0; i < max_size; ++i) {
+    for (size_t i = 0; i < max_size; ++i) {
         ASSERT_EQ(array.size, (size_t)i);
         ASSERT_EQ(array_size(array), i);
         array_append(array, i);
     }
-    for (int i = max_size - 1; i >= 0; --i) {
-        array_get(array, i, value);
-        ASSERT_EQ(value, i);
-        ASSERT_EQ(array.size, (size_t)i);
-        ASSERT_EQ(array_size(array), i);
+    for (size_t i = max_size; i > 0; --i) {
+        size_t idx = i - 1;
+        array_get(array, idx, value);
+        ASSERT_EQ(value, idx);
+        ASSERT_EQ(array.size, max_size);
+        ASSERT_EQ(array_size(array), max_size);
     }
 
     array_clear(array);
-    for (int i = 0; i < max_size; ++i) {
+    for (size_t i = 0; i < max_size; ++i) {
         ASSERT_EQ(array.size, (size_t)i);
         ASSERT_EQ(array_size(array), i);
         array_append(array, i);
     }
-    for (int i = max_size - 1; i >= 0; --i) {
-        array_get(array, 0, value);
-        ASSERT_EQ(value, i);
-        ASSERT_EQ(array.size, (size_t)i);
-        ASSERT_EQ(array_size(array), i);
+    for (size_t i = max_size; i > 0; --i) {
+        size_t idx = i - 1;
+        array_get(array, idx, value);
+        ASSERT_EQ(value, idx);
+        ASSERT_EQ(array.size, max_size);
+        ASSERT_EQ(array_size(array), max_size);
     }
     array_destroy(array);
 }
 
 TEST(test_array_special_type)
 {
-    ASSERT(0 && "TODO: test special");
+    struct Person {
+        char* name;
+        int age;
+    } p = {
+        .name = "Name",
+        .age = 25
+    };
+
+    Array array;
+    array_init(array, sizeof(struct Person));
+
+    struct Person value;
+    size_t max_size = ARRAY_INITIAL_CAPACITY * 2 + 2;
+
+    for (size_t i = 0; i < max_size; ++i) {
+        ASSERT_EQ(array.size, (size_t)i);
+        ASSERT_EQ(array_size(array), i);
+        array_append(array, p);
+    }
+    for (size_t i = max_size; i > 0; --i) {
+        size_t idx = i - 1;
+        array_get(array, idx, value);
+        ASSERT_EQ(value.name, p.name);
+        ASSERT_EQ(value.age, p.age);
+        ASSERT_EQ(array.size, max_size);
+        ASSERT_EQ(array_size(array), max_size);
+    }
+
+    array_destroy(array);
 }
 
 // === MAIN ===================================================================

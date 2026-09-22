@@ -16,11 +16,13 @@
  *   array_clear(array)             Clears the array and keeps the allocated capacity.
  *   array_destroy(array)           Destroys the array and frees the allocated memory.
  *
+ * The initialized item_size value cannot be modified after initialized.
+ * The Initial capacity can be defined by ARRAY_INITIAL_CAPACITY macro.
+ *
  * Return values:
  *   ARRAY_OK: Operation successful.
  *   ARRAY_MEMORY_ERROR: Memory allocation failed.
  *   ARRAY_OUT_OF_BOUND: Index out of bounds.
- *   ARRAY_EMPTY: Array is empty.
  *
  * Usage:
  *   Include the header file in any file where you want to use the array: #include "sh25_array.h"
@@ -58,7 +60,6 @@ typedef enum {
     ARRAY_OK,
     ARRAY_MEMORY_ERROR,
     ARRAY_OUT_OF_BOUND,
-    ARRAY_EMPTY,
 } ArrayResult;
 
 typedef struct {
@@ -67,7 +68,6 @@ typedef struct {
     size_t item_size;
     size_t size;
 } Array;
-
 
 void sh25_array_init(Array* array, size_t item_size);
 ArrayResult sh25_array_alloc(Array* array, size_t size);
@@ -81,7 +81,10 @@ void sh25_array_destroy(Array* array);
 
 #define array_init(array, item_size)    sh25_array_init(&array, item_size)
 #define array_alloc(array, size)        sh25_array_alloc(&array, size)
-#define array_append(array, item)       sh25_array_append(&array, (void*)&(__typeof__(item)){ (item) })
+// to copy the item to the list we need an lvalue, and to support rvalues we
+// cast it to lvalue by creating the onject of whatever type it is.
+// to convert to (void*)lvalue: (void*)(__typeof__(item)[1]){ (item) })
+#define array_append(array, item)       sh25_array_append(&array, (void*)(__typeof__(item)[1]){ (item) })
 #define array_get(array, index, get)    sh25_array_get(&array, index, (void*)&get)
 #define array_set(array, index, set)    sh25_array_set(&array, index, (void*)&set)
 #define array_size(array)               sh25_array_size(&array)
@@ -153,11 +156,7 @@ ArrayResult sh25_array_get(Array* array, size_t index, void* get)
 {
     assert(array);
 
-    if (array->size == 0) {
-        return ARRAY_EMPTY;
-    }
-
-    if (index >= array->size || index < 0) {
+    if (index >= array->size) {
         return ARRAY_OUT_OF_BOUND;
     }
 
@@ -173,11 +172,7 @@ ArrayResult sh25_array_set(Array* array, size_t index, const void* set)
 {
     assert(array);
 
-    if (array->size == 0) {
-        return ARRAY_EMPTY;
-    }
-
-    if (index >= array->size || index < 0) {
+    if (index >= array->size) {
         return ARRAY_OUT_OF_BOUND;
     }
 
