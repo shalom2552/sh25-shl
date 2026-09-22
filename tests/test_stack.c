@@ -3,6 +3,8 @@
 
 #include "sh25_utest.h"
 
+#include <stddef.h>
+
 TEST(test_stack_init)
 {
     Stack stack;
@@ -133,12 +135,30 @@ TEST(test_stack_size)
 {
     Stack stack;
     stack_init(stack, sizeof(int));
+    int max_size = STACK_INITIAL_CAPACITY * 2 + 2;
 
-    int a = 1;
-    for (int i = 0; i < STACK_INITIAL_CAPACITY * 2 + 2; ++i) {
+    int pop;
+    for (int i = 0; i < max_size; ++i) {
         ASSERT_EQ(stack.size, (size_t)i);
         ASSERT_EQ(stack_size(stack), i);
-        stack_push(stack, a);
+        stack_push(stack, i);
+    }
+    for (int i = max_size - 1; i >= 0; --i) {
+        stack_pop(stack, pop);
+        ASSERT_EQ(pop, i);
+        ASSERT_EQ(stack.size, (size_t)i);
+        ASSERT_EQ(stack_size(stack), i);
+    }
+    for (int i = 0; i < max_size; ++i) {
+        ASSERT_EQ(stack.size, (size_t)i);
+        ASSERT_EQ(stack_size(stack), i);
+        stack_push(stack, i);
+    }
+    for (int i = max_size - 1; i >= 0; --i) {
+        stack_pop(stack, pop);
+        ASSERT_EQ(pop, i);
+        ASSERT_EQ(stack.size, (size_t)i);
+        ASSERT_EQ(stack_size(stack), i);
     }
     stack_destroy(stack);
 }

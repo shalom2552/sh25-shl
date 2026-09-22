@@ -3,5 +3,6 @@
 
 TEST_MAIN {
     RUN_SUITE(test_stack);
+    RUN_SUITE(test_array);
 }
 
