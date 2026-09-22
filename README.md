@@ -30,7 +30,7 @@ only once.
 
 ## Stack
 
-- Create a stack: `stack_t stack = {0};`
+- Create a stack: `Stack stack = {0};`
 - Must call `stack_init` before any use.
 - Call stack_destroy when done to free memory.
 
@@ -55,7 +55,7 @@ only once.
 
 int main(int argc, char *argv[])
 {
-    stack_t stack = {0};
+    Stack stack = {0};
     stack_init(stack, sizeof(int));
     int a = 10;
     stack_push(stack, a);

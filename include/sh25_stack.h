@@ -20,7 +20,7 @@
  * Usage:
  *   Include the header file in any file where you want to use the stack: #include "sh25_stack.h"
  *   Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
- *    - Create a stack: stack_t stack = {0};
+ *    - Create a stack: Stack stack = {0};
  *    - Must call `stack_init` before any use.
  *    - Pop, drop and peek return STACK_EMPTY on an empty stack.
  *    - Call stack_destroy when done to free memory.
@@ -29,7 +29,7 @@
  *   #define SH25_STACK_IMPLEMENTATION
  *   #include "sh25_stack.h"
  *   #include <stdio.h>
- *   stack_t stack = {0};
+ *   Stack stack = {0};
  *   stack_init(stack, sizeof(int));
  *   int a = 10;
  *   stack_push(stack, a);
@@ -52,30 +52,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define STACK_INITIAL_CAPACITY 16
-
-typedef struct {
-    void* top;
-    void* data;
-    size_t capacity;
-    size_t item_size;
-    size_t size;
-} stack_t;
-
 typedef enum {
     STACK_OK,
     STACK_MEMORY_ERROR,
     STACK_EMPTY,
 } StackResult;
 
-void sh25_stack_init(stack_t* stack, size_t item_size);
-StackResult sh25_stack_push(stack_t* stack, void* item);
-StackResult sh25_stack_pop(stack_t* stack, void* pop);
-StackResult sh25_stack_peek(stack_t* stack, void* peek);
-int sh25_stack_size(stack_t* stack);
-int sh25_stack_empty(stack_t* stack);
-void sh25_stack_clear(stack_t* stack);
-void sh25_stack_destroy(stack_t* stack);
+typedef struct Stack Stack;
+
+void sh25_stack_init(Stack* stack, size_t item_size);
+StackResult sh25_stack_push(Stack* stack, void* item);
+StackResult sh25_stack_pop(Stack* stack, void* pop);
+StackResult sh25_stack_peek(Stack* stack, void* peek);
+int sh25_stack_size(Stack* stack);
+int sh25_stack_empty(Stack* stack);
+void sh25_stack_clear(Stack* stack);
+void sh25_stack_destroy(Stack* stack);
 
 #define stack_init(stack, item_size)    sh25_stack_init(&stack, item_size)
 #define stack_push(stack, item)         sh25_stack_push(&stack, (void*)&(__typeof__(item)){ (item) })
@@ -89,7 +81,19 @@ void sh25_stack_destroy(stack_t* stack);
 
 #ifdef SH25_STACK_IMPLEMENTATION
 
-void sh25_stack_init(stack_t *stack, size_t item_size)
+#ifndef STACK_INITIAL_CAPACITY
+#define STACK_INITIAL_CAPACITY 16
+#endif // !STACK_INITIAL_CAPACITY
+
+struct Stack {
+    void* top;
+    void* data;
+    size_t capacity;
+    size_t item_size;
+    size_t size;
+};
+
+void sh25_stack_init(Stack *stack, size_t item_size)
 {
     assert(stack);
 
@@ -100,7 +104,7 @@ void sh25_stack_init(stack_t *stack, size_t item_size)
     stack->size = 0;
 }
 
-StackResult sh25_stack_push(stack_t* stack, void* item)
+StackResult sh25_stack_push(Stack* stack, void* item)
 {
     assert(stack);
     assert(item);
@@ -123,7 +127,7 @@ StackResult sh25_stack_push(stack_t* stack, void* item)
     return STACK_OK;
 }
 
-StackResult sh25_stack_pop(stack_t* stack, void* pop)
+StackResult sh25_stack_pop(Stack* stack, void* pop)
 {
     if (stack->size == 0) {
         return STACK_EMPTY;
@@ -149,7 +153,7 @@ StackResult sh25_stack_pop(stack_t* stack, void* pop)
     return STACK_OK;
 }
 
-StackResult sh25_stack_peek(stack_t* stack, void* peek)
+StackResult sh25_stack_peek(Stack* stack, void* peek)
 {
     if (stack->size == 0) {
         return STACK_EMPTY;
@@ -163,27 +167,27 @@ StackResult sh25_stack_peek(stack_t* stack, void* peek)
     return STACK_OK;
 }
 
-int sh25_stack_size(stack_t* stack)
+int sh25_stack_size(Stack* stack)
 {
     assert(stack);
 
     return stack->size;
 }
 
-int sh25_stack_empty(stack_t* stack)
+int sh25_stack_empty(Stack* stack)
 {
     assert(stack);
     return stack->size == 0;
 }
 
-void sh25_stack_clear(stack_t* stack)
+void sh25_stack_clear(Stack* stack)
 {
     assert(stack);
     stack->top = (void*)((char*)stack->data + stack->item_size * stack->size);
     stack->size = 0;
 }
 
-void sh25_stack_destroy(stack_t* stack)
+void sh25_stack_destroy(Stack* stack)
 {
     assert(stack);
 

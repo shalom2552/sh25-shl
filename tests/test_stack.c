@@ -5,7 +5,7 @@
 
 TEST(test_stack_init)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
     ASSERT_EQ(stack.size, 0);
 
@@ -14,7 +14,7 @@ TEST(test_stack_init)
 
 TEST(test_stack_push)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int a = 1;
@@ -31,7 +31,7 @@ TEST(test_stack_push)
 
 TEST(test_stack_push_same_element)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int a = 1;
@@ -48,7 +48,7 @@ TEST(test_stack_push_same_element)
 
 TEST(test_stack_push_twice)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int a = 1;
@@ -72,7 +72,7 @@ TEST(test_stack_push_twice)
 
 TEST(test_stack_peek)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int peek;
@@ -96,7 +96,7 @@ TEST(test_stack_peek)
 
 TEST(test_stack_clear)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int value = 5;
@@ -117,7 +117,7 @@ TEST(test_stack_clear)
 
 TEST(test_stack_drop)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int a = 1;
@@ -131,7 +131,7 @@ TEST(test_stack_drop)
 
 TEST(test_stack_size)
 {
-    stack_t stack;
+    Stack stack;
     stack_init(stack, sizeof(int));
 
     int a = 1;

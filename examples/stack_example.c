@@ -14,7 +14,7 @@ int matching(char open, char close) {
 }
 
 int valid_parentheses(const char* str) {
-    stack_t s = {0};
+    Stack s = {0};
     stack_init(s, sizeof(char));
 
     for (int i = 0; str[i] != '\0'; ++i) {
@@ -38,6 +38,7 @@ int valid_parentheses(const char* str) {
     return result;
 }
 
+#ifndef NO_MAIN
 typedef struct { int valid; char* str; } Case;
 static Case cases[] = {
     { .valid = 1, .str = "" },
@@ -51,7 +52,6 @@ static Case cases[] = {
     { .valid = 1, .str = "()()[()]{{()[()]}}" },
 };
 
-#ifndef NO_MAIN
 int main(void) {
     int n = sizeof(cases) / sizeof(Case);
     for (int i = 0; i < n; ++i) {
