@@ -163,6 +163,36 @@ TEST(test_stack_size)
     stack_destroy(stack);
 }
 
+TEST(test_stack_special_type)
+{
+    struct Person {
+        char* name;
+        int age;
+    } p = {
+        .name = "Name",
+        .age = 25
+    };
+
+    Stack stack;
+    stack_init(stack, sizeof(p));
+    int max_size = STACK_INITIAL_CAPACITY * 2 + 2;
+
+    struct Person pop;
+    for (int i = 0; i < max_size; ++i) {
+        ASSERT_EQ(stack.size, (size_t)i);
+        ASSERT_EQ(stack_size(stack), i);
+        stack_push(stack, p);
+    }
+    for (int i = max_size - 1; i >= 0; --i) {
+        stack_pop(stack, pop);
+        ASSERT_EQ(pop.name, p.name);
+        ASSERT_EQ(pop.age, p.age);
+        ASSERT_EQ(stack.size, (size_t)i);
+        ASSERT_EQ(stack_size(stack), i);
+    }
+    stack_destroy(stack);
+}
+
 // === MAIN ===================================================================
 TEST_SUITE(test_stack)
 {
@@ -174,5 +204,6 @@ TEST_SUITE(test_stack)
     RUN_TEST(test_stack_clear);
     RUN_TEST(test_stack_drop);
     RUN_TEST(test_stack_size);
+    RUN_TEST(test_stack_special_type);
 }
 

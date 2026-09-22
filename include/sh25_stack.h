@@ -17,6 +17,9 @@
  *   stack_clear(stack)             Clears the stack and keeps the allocated capacity.
  *   stack_destroy(stack)           Destroys the stack and frees all allocated memory.
  *
+ * The initialized item_size value cannot be modified after initialized.
+ * The Initial capacity can be defined by STACK_INITIAL_CAPACITY macro.
+ *
  * Usage:
  *   Include the header file in any file where you want to use the stack: #include "sh25_stack.h"
  *   Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
@@ -70,7 +73,10 @@ void sh25_stack_clear(Stack* stack);
 void sh25_stack_destroy(Stack* stack);
 
 #define stack_init(stack, item_size)    sh25_stack_init(&stack, item_size)
-#define stack_push(stack, item)         sh25_stack_push(&stack, (void*)&(__typeof__(item)){ (item) })
+// to copy the item to the list we need an lvalue, and to support rvalues we
+// cast it to lvalue by creating the onject of whatever type it is.
+// to convert to (void*)lvalue: (void*)(__typeof__(item)[1]){ (item) })
+#define stack_push(stack, item)         sh25_stack_push(&stack, (void*)(__typeof__(item)[1]){ (item) })
 #define stack_pop(stack, pop)           sh25_stack_pop(&stack, (void*)&pop)
 #define stack_drop(stack)               sh25_stack_pop(&stack, NULL)
 #define stack_peek(stack, peek)         sh25_stack_peek(&stack, (void*)&peek)
