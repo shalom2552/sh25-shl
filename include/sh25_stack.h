@@ -67,7 +67,7 @@ void sh25_stack_init(Stack* stack, size_t item_size);
 StackResult sh25_stack_push(Stack* stack, void* item);
 StackResult sh25_stack_pop(Stack* stack, void* pop);
 StackResult sh25_stack_peek(Stack* stack, void* peek);
-int sh25_stack_size(Stack* stack);
+size_t sh25_stack_size(Stack* stack);
 int sh25_stack_empty(Stack* stack);
 void sh25_stack_clear(Stack* stack);
 void sh25_stack_destroy(Stack* stack);
@@ -175,7 +175,7 @@ StackResult sh25_stack_peek(Stack* stack, void* peek)
     return STACK_OK;
 }
 
-int sh25_stack_size(Stack* stack)
+size_t sh25_stack_size(Stack* stack)
 {
     assert(stack);
 
