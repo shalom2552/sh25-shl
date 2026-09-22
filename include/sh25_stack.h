@@ -140,7 +140,7 @@ StackResult sh25_stack_pop(Stack* stack, void* pop)
     }
     --stack->size;
 
-    if (stack->size < stack->capacity / 4) {
+    if (stack->size < stack->capacity / 4 && stack->capacity > STACK_INITIAL_CAPACITY) {
         size_t capacity = stack->capacity / 2;
         void* data = realloc(stack->data, capacity * stack->item_size);
         if (data) {
@@ -149,7 +149,9 @@ StackResult sh25_stack_pop(Stack* stack, void* pop)
         }
     }
 
-    stack->top = (void*)((char*)stack->data + stack->item_size * (stack->size - 1));
+    stack->top = stack->size == 0
+        ? NULL
+        : (void*)((char*)stack->data + stack->item_size * (stack->size - 1));
     return STACK_OK;
 }
 
@@ -183,7 +185,7 @@ int sh25_stack_empty(Stack* stack)
 void sh25_stack_clear(Stack* stack)
 {
     assert(stack);
-    stack->top = (void*)((char*)stack->data + stack->item_size * stack->size);
+    stack->top = NULL;
     stack->size = 0;
 }
 
