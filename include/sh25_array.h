@@ -74,7 +74,7 @@ ArrayResult sh25_array_alloc(Array* array, size_t size);
 ArrayResult sh25_array_append(Array* array, void* item);
 ArrayResult sh25_array_get(Array* array, size_t index, void* get);
 ArrayResult sh25_array_set(Array* array, size_t index, const void* set);
-int sh25_array_size(Array* array);
+size_t sh25_array_size(Array* array);
 int sh25_array_empty(Array* array);
 void sh25_array_clear(Array* array);
 void sh25_array_destroy(Array* array);
@@ -184,7 +184,7 @@ ArrayResult sh25_array_set(Array* array, size_t index, const void* set)
     return ARRAY_OK;
 }
 
-int sh25_array_size(Array* array)
+size_t sh25_array_size(Array* array)
 {
     assert(array);
 
