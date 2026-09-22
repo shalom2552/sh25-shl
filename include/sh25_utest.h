@@ -29,6 +29,10 @@
  *   3. Define suites with TEST_SUITE(), call RUN_TEST() for each test.
  *   4. Use TEST_MAIN once, call RUN_SUITE() for each suite.
  *
+ * run the tests:
+ *   $ gcc -o test test_*.c
+ *   $ ./test
+ *
  * Example Usage:
  *   #define SH25_UTEST_IMPLEMENTATION
  *   #include "sh25_utest.h"
