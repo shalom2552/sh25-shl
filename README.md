@@ -1,5 +1,5 @@
 
-# Sh25-STB
+# Sh25-shl
 
 A collection of single-header libraries for c.
 
@@ -14,7 +14,7 @@ A collection of single-header libraries for c.
 Download the headers you need into your project.
 
 ```Bash
-BASE=shalom2552.github.io/sh25-stb/include
+BASE=shalom2552.github.io/sh25-shl/include
 wget $BASE/sh25_stack.h
 wget $BASE/sh25_utest.h
 ```
