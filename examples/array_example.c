@@ -1,7 +1,8 @@
+#define SH25_ARRAY_IMPL
+#include "../include/sh25_array.h"
+
 #include <stddef.h>
 #include <stdio.h>
-#define SH25_ARRAY_IMPLEMENTATION
-#include "../include/sh25_array.h"
 
 void merge(Array* array, size_t left, size_t mid, size_t right) {
 

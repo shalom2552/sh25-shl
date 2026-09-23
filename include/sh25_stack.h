@@ -4,7 +4,7 @@
  * This library provides a simple stack implementation with dynamic memory allocation.
  * The stack is implemented using a dynamic array and supports dynamic resizing.
  *
- * Define SH25_STACK_IMPLEMENTATION in exactly ONE translation unit before including this header.
+ * Define SH25_STACK_IMPL in exactly ONE translation unit before including this header.
  *
  * API:
  *   stack_init(stack, item_size)   initialize the stack with a given item size, must call before use.
@@ -22,14 +22,14 @@
  *
  * Usage:
  *   Include the header file in any file where you want to use the stack: #include "sh25_stack.h"
- *   Define the implementation once in your project: #define SH25_STACK_IMPLEMENTATION
+ *   Define the implementation once in your project: #define SH25_STACK_IMPL
  *    - Create a stack: Stack stack = {0};
  *    - Must call `stack_init` before any use.
  *    - Pop, drop and peek return STACK_EMPTY on an empty stack.
  *    - Call stack_destroy when done to free memory.
  *
  * Example usage:
- *   #define SH25_STACK_IMPLEMENTATION
+ *   #define SH25_STACK_IMPL
  *   #include "sh25_stack.h"
  *   #include <stdio.h>
  *   Stack stack = {0};
@@ -85,7 +85,7 @@ void sh25_stack_destroy(Stack* stack);
 #define stack_clear(stack)              sh25_stack_clear(&stack)
 #define stack_destroy(stack)            sh25_stack_destroy(&stack)
 
-#ifdef SH25_STACK_IMPLEMENTATION
+#ifdef SH25_STACK_IMPL
 
 #ifndef STACK_INITIAL_CAPACITY
 #define STACK_INITIAL_CAPACITY 16
@@ -208,7 +208,7 @@ void sh25_stack_destroy(Stack* stack)
     stack = NULL;
 }
 
-#endif // SH25_STACK_IMPLEMENTATION
+#endif // SH25_STACK_IMPL
 
 #endif // !SH25_STACK_fe38ae3e35107192f10c318e1f600880
 

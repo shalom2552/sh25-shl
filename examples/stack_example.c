@@ -1,4 +1,4 @@
-#define SH25_STACK_IMPLEMENTATION
+#define SH25_STACK_IMPL
 #include "../include/sh25_stack.h"
 
 #include <stdio.h>
