@@ -3,7 +3,7 @@
  *
  * This library provides a simple dynamic array with dynamic memory allocation.
  *
- * Define SH25_ARRAY_IMPLEMENTATION in exactly ONE translation unit before including this header.
+ * Define SH25_ARRAY_IMPL in exactly ONE translation unit before including this header.
  *
  * API:
  *   array_init(array, item_size)   Initialize the array with a given item size, must call before use.
@@ -26,13 +26,13 @@
  *
  * Usage:
  *   Include the header file in any file where you want to use the array: #include "sh25_array.h"
- *   Define the implementation once in your project: #define SH25_ARRAY_IMPLEMENTATION
+ *   Define the implementation once in your project: #define SH25_ARRAY_IMPL
  *    - Create a stack: Array array = {0};
  *    - Must call `array_init` before any use.
  *    - Call array_destroy when done to free memory.
  *
  * Example usage:
- *   #define SH25_ARRAY_IMPLEMENTATION
+ *   #define SH25_ARRAY_IMPL
  *   #include "sh25_array.h"
  *   #include <stdio.h>
  *   Array array = {0};
@@ -92,7 +92,7 @@ void sh25_array_destroy(Array* array);
 #define array_clear(array)              sh25_array_clear(&array)
 #define array_destroy(array)            sh25_array_destroy(&array)
 
-#ifdef SH25_ARRAY_IMPLEMENTATION
+#ifdef SH25_ARRAY_IMPL
 
 #ifndef ARRAY_INITIAL_CAPACITY
 #define ARRAY_INITIAL_CAPACITY 16
@@ -218,7 +218,7 @@ void sh25_array_destroy(Array* array)
     array = NULL;
 }
 
-#endif // SH25_ARRAY_IMPLEMENTATION
+#endif // SH25_ARRAY_IMPL
 
 #endif // !SH25_ARRAY_H_35863394ccdccb4f186c6a7cedc68f06
 

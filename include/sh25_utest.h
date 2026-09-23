@@ -5,7 +5,7 @@
  * It provides macros to define test functions, test suites, assertions, and to run tests.
  * It also provides macros to define the main function to run all test suites.
  *
- * Define SH25_UTEST_IMPLEMENTATION in exactly ONE translation unit before including this header.
+ * Define SH25_UTEST_IMPL in exactly ONE translation unit before including this header.
  *
  * API:
  *   TEST(name)             Define a test function. Body implement with braces.
@@ -24,7 +24,7 @@
  * Exit Code: 0 if all tests passed, 1 otherwise.
  *
  * Usage:
- *   1. Define SH25_UTEST_IMPLEMENTATION once, before including this header.
+ *   1. Define SH25_UTEST_IMPL once, before including this header.
  *   2. Define tests with TEST().
  *   3. Define suites with TEST_SUITE(), call RUN_TEST() for each test.
  *   4. Use TEST_MAIN once, call RUN_SUITE() for each suite.
@@ -34,7 +34,7 @@
  *   $ ./test
  *
  * Example Usage:
- *   #define SH25_UTEST_IMPLEMENTATION
+ *   #define SH25_UTEST_IMPL
  *   #include "sh25_utest.h"
  *   #include "stack.h"
  *   TEST(test_stack_size) { ASSERT(1); }
@@ -153,7 +153,7 @@ void sh25_utest__report(void);
     } \
     static void sh25_utest_run(void)
 
-#ifdef SH25_UTEST_IMPLEMENTATION
+#ifdef SH25_UTEST_IMPL
 int sh25_utest_verbose = 2;
 int sh25_utest_nfailures = 0;
 int sh25_utest_suites = 0;
@@ -186,7 +186,7 @@ void sh25_utest__report(void)
     fprintf(stderr, "\n"SH25__LINE"\n");
 }
 
-#endif // SH25_UTEST_IMPLEMENTATION
+#endif // SH25_UTEST_IMPL
 
 #endif // !SH25_UTEST_H_6c5f728595d1e0c71e833e475997b1d8
 

@@ -1,4 +1,4 @@
-#define SH25_UTEST_IMPLEMENTATION
+#define SH25_UTEST_IMPL
 #include "sh25_utest.h"
 
 TEST_MAIN {

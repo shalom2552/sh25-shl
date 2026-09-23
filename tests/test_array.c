@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
-#define SH25_ARRAY_IMPLEMENTATION
+#define SH25_ARRAY_IMPL
 #include "sh25_array.h"
 
 #include "sh25_utest.h"
