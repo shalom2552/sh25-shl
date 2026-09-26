@@ -1,7 +1,11 @@
 /*
- * sh25_macros.h - macros header
+ * sh25_macros.h - Useful macros for C
  *
  * This header provides usfull macros for development.
+ *
+ * Macros:
+ *   TODO           prints a todo message and aborts the program
+ *   UNCREACHABLE   prints an unreachable message and abort
  *
  * Author: shalom2552
  * License: MIT
@@ -20,12 +24,12 @@
 #define SH25__FILE __FILE__
 #endif
 
-#define PRINT_SRC_LOC fprintf(stderr, "\t%s:%d at %s()\n", SH25__FILE, __LINE__, __func__);
+#define _PRINT_SRC_LOC fprintf(stderr, "\t%s:%d at %s()\n", SH25__FILE, __LINE__, __func__);
 
 #define DUMP(what, fmt, ...)                                     \
 do {                                                   \
     fprintf(stderr, "%s: "fmt"\n", what, ##__VA_ARGS__); \
-    PRINT_SRC_LOC;                                     \
+    _PRINT_SRC_LOC;                                     \
     abort();                                           \
 } while (0)
 
