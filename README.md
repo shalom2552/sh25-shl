@@ -9,6 +9,7 @@ A collection of single-header libraries for c.
 - **sh25_array**: Dynamic array supporting any type
 - **sh25_stack**: Generic stack library
 - **sh25_tdraw**: Terminal drawing library
+- **sh25_macros**: Useful macros for C
 
 ## Install
 
