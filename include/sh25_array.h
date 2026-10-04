@@ -60,6 +60,7 @@ typedef enum {
     ARRAY_OK,
     ARRAY_MEMORY_ERROR,
     ARRAY_OUT_OF_BOUND,
+    ARRAY_INCOMPATIBLE_SIZE,
 } ArrayResult;
 
 typedef struct {
@@ -71,26 +72,31 @@ typedef struct {
 
 void sh25_array_init(Array* array, size_t item_size);
 ArrayResult sh25_array_alloc(Array* array, size_t size);
-ArrayResult sh25_array_append(Array* array, void* item);
-ArrayResult sh25_array_get(Array* array, size_t index, void* get);
-ArrayResult sh25_array_set(Array* array, size_t index, const void* set);
+ArrayResult sh25_array_append(Array* array, void* item, size_t item_size);
+ArrayResult sh25_array_get(Array* array, size_t index, void* get, size_t get_size);
+ArrayResult sh25_array_set(Array* array, size_t index, const void* set, size_t set_size);
+ArrayResult sh25_array_remove(Array* array, size_t index, int shift);
 size_t sh25_array_size(Array* array);
 int sh25_array_empty(Array* array);
 void sh25_array_clear(Array* array);
 void sh25_array_destroy(Array* array);
 
-#define array_init(array, item_size)    sh25_array_init(&array, item_size)
-#define array_alloc(array, size)        sh25_array_alloc(&array, size)
+// NOLINTBEGIN(bugprone-sizeof-expression)
+#define array_init(array, item_size)        sh25_array_init(&array, item_size)
+#define array_alloc(array, size)            sh25_array_alloc(&array, size)
 // to copy the item to the list we need an lvalue, and to support rvalues we
 // cast it to lvalue by creating the onject of whatever type it is.
 // to convert to (void*)lvalue: (void*)(__typeof__(item)[1]){ (item) })
-#define array_append(array, item)       sh25_array_append(&array, (void*)(__typeof__(item)[1]){ (item) })
-#define array_get(array, index, get)    sh25_array_get(&array, index, (void*)&get)
-#define array_set(array, index, set)    sh25_array_set(&array, index, (void*)&set)
-#define array_size(array)               sh25_array_size(&array)
-#define array_empty(array)              sh25_array_empty(&array)
-#define array_clear(array)              sh25_array_clear(&array)
-#define array_destroy(array)            sh25_array_destroy(&array)
+#define array_append(array, item)           sh25_array_append(&array, (void*)(__typeof__(item)[1]){ (item) }, sizeof(item))
+#define array_get(array, index, get)        sh25_array_get(&array, index, (void*)&get, sizeof(get))
+#define array_set(array, index, set)        sh25_array_set(&array, index, (void*)&set, sizeof(set))
+#define array_swap_remove(array, index)     sh25_array_remove(&array, index, 0)
+#define array_shift_remove(array, index)    sh25_array_remove(&array, index, 1)
+#define array_size(array)                   sh25_array_size(&array)
+#define array_empty(array)                  sh25_array_empty(&array)
+#define array_clear(array)                  sh25_array_clear(&array)
+#define array_destroy(array)                sh25_array_destroy(&array)
+// NOLINTEND(bugprone-sizeof-expression)
 
 #ifdef SH25_ARRAY_IMPL
 
@@ -130,10 +136,14 @@ ArrayResult sh25_array_alloc(Array* array, size_t size)
     return ARRAY_OK;
 }
 
-ArrayResult sh25_array_append(Array* array, void* item)
+ArrayResult sh25_array_append(Array* array, void* item, size_t item_size)
 {
     assert(array);
     assert(item);
+
+    if (item_size != array->item_size) {
+        return ARRAY_INCOMPATIBLE_SIZE;
+    }
 
     if (array->size >= array->capacity) {
         size_t capacity = array->capacity == 0 ? ARRAY_INITIAL_CAPACITY : array->capacity * 2;
@@ -152,12 +162,16 @@ ArrayResult sh25_array_append(Array* array, void* item)
     return ARRAY_OK;
 }
 
-ArrayResult sh25_array_get(Array* array, size_t index, void* get)
+ArrayResult sh25_array_get(Array* array, size_t index, void* get, size_t get_size)
 {
     assert(array);
 
     if (index >= array->size) {
         return ARRAY_OUT_OF_BOUND;
+    }
+
+    if (get_size != array->item_size) {
+        return ARRAY_INCOMPATIBLE_SIZE;
     }
 
     assert(get);
@@ -168,7 +182,7 @@ ArrayResult sh25_array_get(Array* array, size_t index, void* get)
     return ARRAY_OK;
 }
 
-ArrayResult sh25_array_set(Array* array, size_t index, const void* set)
+ArrayResult sh25_array_set(Array* array, size_t index, const void* set, size_t set_size)
 {
     assert(array);
 
@@ -176,11 +190,48 @@ ArrayResult sh25_array_set(Array* array, size_t index, const void* set)
         return ARRAY_OUT_OF_BOUND;
     }
 
+    if (set_size != array->item_size) {
+        return ARRAY_INCOMPATIBLE_SIZE;
+    }
+
     assert(set);
     assert(array->data && "Is array initialized?");
 
     memcpy((char*)array->data + index * array->item_size, set, array->item_size);
 
+    return ARRAY_OK;
+}
+
+ArrayResult sh25_array_remove(Array* array, size_t index, int shift)
+{
+    assert(array);
+
+    if (index >= array->size) {
+        return ARRAY_OUT_OF_BOUND;
+    }
+
+    char* dest = (char*)array->data + index * array->item_size;
+
+    if (shift) {
+        size_t n = (array->size - index - 1) * array->item_size;
+        memmove(dest, dest + array->item_size, n);
+    } else {
+        char* src = (char*)array->data + (array->size - 1) * array->item_size;
+        memmove(dest, src, array->item_size);
+    }
+
+    if (array->size < array->capacity / 2) {
+        size_t capacity = array->capacity / 2;
+        void* data = realloc(array->data, capacity * array->item_size);
+        if (!data) {
+            return ARRAY_MEMORY_ERROR;
+        }
+
+        array->data = data;
+        array->capacity = capacity;
+    }
+
+    --array->size;
     return ARRAY_OK;
 }
 
